@@ -65,7 +65,7 @@ const { Buffer } = require("buffer");
       existingFileHandler.close();
 
       const fileHandler = await fs.open(path, "a");
-      await fileHandler.write(content)
+      await fileHandler.write(content);
       fileHandler.close();
 
       console.log(`content added successfully`);
@@ -73,7 +73,9 @@ const { Buffer } = require("buffer");
       if (error.code === "ENOENT") {
         console.log(`the file does not exist`);
       } else {
-        console.log("something went wrong while adding the content to the file");
+        console.log(
+          "something went wrong while adding the content to the file"
+        );
       }
     }
   };
@@ -115,21 +117,27 @@ const { Buffer } = require("buffer");
     // renaming a file
     // rename the file <old-path> to <new-path>
     if (command.includes(RENAME_FILE)) {
-      const idx = command.indexOf(" to ");
-      const oldPath = command.substring(RENAME_FILE.length + 1, idx).trim();
-      const newPath = command.substring(idx + 4).trim();
-
-      renameFile(oldPath, newPath);
+      const match = command.match(/^rename the file (.+?) to (.+)$/);
+      if (match) {
+        const oldPath = match[1].trim();
+        const newPath = match[2].trim();
+        renameFile(oldPath, newPath);
+      } else {
+        console.log("Invalid rename command format");
+      }
     }
 
     // adding content to a file
     // add to the file <path> this content <example>
     if (command.includes(ADD_TO_FILE)) {
-      const idx = command.indexOf(" this content: ");
-      const path = command.substring(ADD_TO_FILE.length + 1, idx).trim();
-      const content = command.substring(idx + 15);
-
-      addToFile(path, content);
+      const match = command.match(/^add to the file (.+?) this content: (.+)$/);
+      if (match) {
+        const path = match[1].trim();
+        const content = match[2].trim();
+        addToFile(path, content);
+      } else {
+        console.log("Invalid add to file command format");
+      }
     }
   });
 
